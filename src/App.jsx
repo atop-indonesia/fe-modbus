@@ -2,9 +2,56 @@ import { useState } from "react";
 import Chart from "react-apexcharts";
 
 function App() {
-  const [data1, setData1] = useState(null);
+  const [data, setData] = useState({ address: null, value: null });
 
-  const [data2, setData2] = useState(null);
+  const readDigital = async e => {
+    e.preventDefault();
+    let a = parseInt(e.target[0].value);
+    console.log(a);
+
+    let responseData;
+
+    try {
+      const response = await fetch("http://localhost:8888/readdigital", {
+        method: "POST",
+        body: JSON.stringify({ address: a }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      responseData = await response.json();
+    } catch (err) {
+      console.error(err);
+    }
+
+    console.log(data);
+    setData(state => ({ address: a, value: responseData.value }));
+  };
+
+  const writeDigital = async e => {
+    e.preventDefault();
+    let a = parseInt(e.target[0].value);
+    let b = parseInt(e.target[1].value);
+    console.log(a);
+
+    let responseData;
+
+    try {
+      const response = await fetch("http://localhost:8888/writedigital", {
+        method: "POST",
+        body: JSON.stringify({ address: a, value: b }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      responseData = await response.json();
+    } catch (err) {
+      console.error(err);
+    }
+
+    console.log(data);
+    setData(state => ({ address: a, value: responseData.value }));
+  };
 
   return (
     <div
@@ -13,57 +60,23 @@ function App() {
         height: "100vh",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-        }}
-      >
-        <Chart
-          options={{
-            chart: {
-              id: "basic-bar",
-            },
-            xaxis: {
-              categories: [
-                1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-              ],
-            },
-          }}
-          series={[
-            {
-              name: "series-1",
-              data: [30, 40, 45, 50, 49, 60, 70, 91],
-            },
-          ]}
-          type='line'
-          width='500'
-        />
-
-        <Chart
-          options={{
-            chart: {
-              id: "basic-bar",
-            },
-            xaxis: {
-              categories: [
-                1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
-                2001,
-              ],
-            },
-          }}
-          series={[
-            {
-              name: "series-1",
-              data: [30, 40, 45, 50, 49, 60, 70, 91],
-            },
-          ]}
-          type='bar'
-          width='500'
-        />
+      <form onSubmit={e => readDigital(e)}>
+        <h2>Read Digital</h2>
+        <input type='number' />
+        <button>submit</button>
+      </form>
+      <div>
+        Value in address {data.address === null ? "kosong" : data.address} ={" "}
+        {data.value === null ? "kosong" : data.value}
       </div>
+
+      <form onSubmit={e => writeDigital(e)}>
+        <h2>Write Digital</h2>
+        <input type='number' name='address' placeholder='address' />
+        <input type='number' name='value' placeholder='value' />
+        <button>submit</button>
+      </form>
+      <div>Value in address X = data</div>
     </div>
   );
 }
