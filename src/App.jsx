@@ -5,10 +5,12 @@ function App() {
   const [DI, setDI] = useState({ address: null, value: null });
   const [DO, setDO] = useState({ address: null, value: null });
   const [AI, setAI] = useState({ address: null, value: null });
+  const [AO, setAO] = useState({ address: null, value: null });
 
   const rD = useRef();
   const wD = useRef();
   const rA = useRef();
+  const wA = useRef();
 
   const readDigital = async e => {
     e.preventDefault();
@@ -63,7 +65,7 @@ function App() {
 
   const readAnalog = async e => {
     e.preventDefault();
-    let address = parseInt(rD.current[0].value);
+    let address = parseInt(rA.current[0].value);
 
     let responseData;
 
@@ -82,6 +84,34 @@ function App() {
 
     console.log(responseData);
     setAI(state => ({ address, value: responseData.value }));
+  };
+
+  const writeAnalog = async e => {
+    e.preventDefault();
+    let address = parseInt(wA.current[0].value);
+    let value = parseInt(wA.current[1].value);
+    console.log(wA.current);
+
+    let responseData;
+
+    try {
+      const response = await fetch("http://localhost:8888/writeanalog", {
+        method: "POST",
+        body: JSON.stringify({
+          address,
+          value,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      responseData = await response.json();
+    } catch (err) {
+      console.error(err);
+    }
+
+    console.log(responseData);
+    setAO(state => ({ address, value }));
   };
 
   return (
@@ -113,7 +143,7 @@ function App() {
       </div>
 
       <h2>Read Analog</h2>
-      <form ref={rD} onSubmit={readAnalog}>
+      <form ref={rA} onSubmit={readAnalog}>
         <input type='number' name='address' placeholder='address' />
         <button>submit</button>
       </form>
@@ -123,13 +153,14 @@ function App() {
       </div>
 
       <h2>Write Analog</h2>
-      <form ref={rD} onSubmit={readAnalog}>
+      <form ref={wA} onSubmit={writeAnalog}>
         <input type='number' name='address' placeholder='address' />
+        <input type='number' name='value' placeholder='value' />
         <button>submit</button>
       </form>
       <div>
-        Value in address {AI.address === null ? "kosong" : AI.address} ={" "}
-        {AI.value === null ? "kosong" : AI.value}
+        Value in address {AO.address === null ? "kosong" : AO.address} ={" "}
+        {AO.value === null ? "kosong" : AO.value}
       </div>
 
       <Chart1 />
