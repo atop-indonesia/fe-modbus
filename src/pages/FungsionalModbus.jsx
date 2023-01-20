@@ -6,11 +6,13 @@ function FungsionalModbus() {
   const [DI, setDI] = useState({ address: null, value: null });
   const [DO, setDO] = useState({ address: null, value: null });
   const [AI, setAI] = useState({ address: null, value: null });
+  const [AMI, setAMI] = useState({ address: null, value: null});
   const [AO, setAO] = useState({ address: null, value: null });
 
   const rD = useRef();
   const wD = useRef();
   const rA = useRef();
+  const rMA = useRef();
   const wA = useRef();
 
   const readDigital = async e => {
@@ -64,6 +66,30 @@ function FungsionalModbus() {
     setDO(state => ({ address, value }));
   };
 
+  const readAnalogMultiple = async e => {
+    e.preventDefault();
+    let address = parseInt(rA.current[0].value);
+    let quantity = parseInt(rMA.current[0].value);
+
+    let responseData;
+
+    try {
+      const response = await fetch("http://localhost:8888/readanalog", {
+        method: "POST",
+        body: JSON.stringify({ address, quantity }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      responseData = await response.json();
+    } catch (err) {
+      console.error(err);
+    }
+
+    console.log(responseData);
+    setAMI(state => ({ address, value: responseData.value }));
+  };
+
   const readAnalog = async e => {
     e.preventDefault();
     let address = parseInt(rA.current[0].value);
@@ -86,6 +112,8 @@ function FungsionalModbus() {
     console.log(responseData);
     setAI(state => ({ address, value: responseData.value }));
   };
+
+
 
   const writeAnalog = async e => {
     e.preventDefault();
@@ -152,6 +180,18 @@ function FungsionalModbus() {
         Value in address {AI.address === null ? "kosong" : AI.address} ={" "}
         {AI.value === null ? "kosong" : AI.value}
       </div>
+
+      <h2>Read Analog Multiple</h2>
+      <form ref={rMA} onSubmit={readAnalogMultiple}>
+        <input type='number' name='address' placeholder='address' />
+        <input type='number' name='quantity' placeholder='quantity' />
+        <button>submit</button>
+      </form>
+      <div>
+        Value in address {AMI.address === null ? "kosong" : AMI.address} ={" "}
+        {AMI.value === null ? "kosong" : AMI.value}
+      </div>
+
 
       <h2>Write Analog</h2>
       <form ref={wA} onSubmit={writeAnalog}>

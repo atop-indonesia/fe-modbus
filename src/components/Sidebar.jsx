@@ -1,12 +1,7 @@
 import './sidebar.css'
-import {
-  LineStyle,
-  TrendingUp,
-  
-
-} from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import DevicesRoundedIcon from '@mui/icons-material/DevicesRounded';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 function Sidebar() {
   return (
     <div className="sidebar">
@@ -16,7 +11,7 @@ function Sidebar() {
           <ul className="sidebarList">
             <Link to="/" className="link">
             <li className="sidebarListItem">
-              <LineStyle className="sidebarIcon" />
+              <HomeOutlinedIcon className="sidebarIcon" />
               Home
             </li>
             </Link>
@@ -27,7 +22,7 @@ function Sidebar() {
             </li>
             </Link>
             <li className="sidebarListItem">
-              <TrendingUp className="sidebarIcon" />
+              <DevicesRoundedIcon className="sidebarIcon" />
               Control
             </li>
           </ul>
